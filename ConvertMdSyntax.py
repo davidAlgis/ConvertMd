@@ -10,7 +10,7 @@ class ConvertMdSyntax(sublime_plugin.TextCommand):
             # Apply conversion to all markdown files in the current project
             files_processed = self.apply_to_project(github2usual)
             sublime.message_dialog(
-                f"Conversion complete. {files_processed} file(s) processed.")
+                "Conversion complete. {} file(s) processed.".format(files_processed))
         else:
             # Apply conversion only to the current view
             self.apply_to_view(edit, github2usual)
@@ -104,7 +104,7 @@ class ConvertMdSyntax(sublime_plugin.TextCommand):
         # Replace the blocks with $$ ... $$
         content = re.sub(math_block_pattern,
                          lambda match:
-                         f"$$\n{match.group(1).strip()}\n$$", content)
+                         "$$\n{}\n$$".format(match.group(1).strip()), content)
 
         return content
 
@@ -115,18 +115,18 @@ class ConvertMdSyntax(sublime_plugin.TextCommand):
         # Replace the blocks with ```math ... ```
         content = re.sub(usual_math_block_pattern,
                          lambda match:
-                         f"```math\n{match.group(1).strip()}\n```", content)
+                         "```math\n{}\n```".format(match.group(1).strip()), content)
 
         return content
 
     def replace_inline_math(self, content):
-        # Regular expression to match $`[math]`$
+        # Regular expression to match $[math]$
         inline_math_pattern = re.compile(r'\$\`(.*?)\`\$')
 
         # Replace the inline math with $...$
         content = re.sub(inline_math_pattern,
                          lambda match:
-                         f"${match.group(1).strip()}$", content)
+                         "${}$".format(match.group(1).strip()), content)
 
         return content
 
@@ -134,14 +134,14 @@ class ConvertMdSyntax(sublime_plugin.TextCommand):
         # Regular expression to match $[math]$
         usual_inline_math_pattern = re.compile(r'\$(.*?)\$')
 
-        # Function to replace the inline math with $`[math]`$ only if it's not already in that format
+        # Function to replace the inline math with $[math]$ only if it's not already in that format
         def replace_inline(match):
             math_content = match.group(1).strip()
             if not re.match(r'`.*?`', math_content):
-                return f"$`{math_content}`$"
+                return "${}$".format(math_content)
             return match.group(0)
 
-        # Replace the inline math with $`[math]`$
+        # Replace the inline math with $[math]$
         content = re.sub(usual_inline_math_pattern, replace_inline, content)
 
         return content
@@ -154,7 +154,7 @@ class ConvertMdSyntax(sublime_plugin.TextCommand):
         # Remove the $$ ... $$ around \begin blocks
         content = re.sub(begin_block_pattern,
                          lambda match:
-                         f"\n{match.group(1).strip()}\n", content)
+                         "\n{}\n".format(match.group(1).strip()), content)
 
         return content
 
@@ -166,6 +166,6 @@ class ConvertMdSyntax(sublime_plugin.TextCommand):
         # Add the $$ ... $$ around \begin blocks
         content = re.sub(begin_block_pattern,
                          lambda match:
-                         f"$$\n{match.group(1).strip()}\n$$", content)
+                         "$$\n{}\n$$".format(match.group(1).strip()), content)
 
         return content

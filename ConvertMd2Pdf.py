@@ -41,41 +41,44 @@ class ConvertMdToPdfCommand(sublime_plugin.TextCommand):
             temp_files.append(temp_pdf_file_name)
 
         # Call pandoc to convert the converted markdown file to PDF
-        result = subprocess.run(['pandoc', temp_converted_md_file.name, '-o', temp_pdf_file_name],
-                                capture_output=True, text=True)
+        try:
+            process = subprocess.Popen(['pandoc', temp_converted_md_file.name, '-o', temp_pdf_file_name],
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
 
-        # Check for errors
-        if result.returncode != 0:
-            sublime.error_message(
-                "There has been an error while generating the pdf from markdown."
-                "We will open the translated latex that is used to generate the pdf. Error:" + result.stderr)
-            # If there is an error, generate a LaTeX file instead
-            temp_latex_file_name = os.path.join(
-                tempfile.gettempdir(), base_name + ".tex")
-            temp_files.append(temp_latex_file_name)
-
-            # Call pandoc to convert the converted markdown file to LaTeX
-            latex_result = subprocess.run(['pandoc', temp_converted_md_file.name, '-s', '-o', temp_latex_file_name],
-                                          capture_output=True, text=True)
-            if latex_result.returncode != 0:
-                error_message = latex_result.stderr if latex_result.stderr else latex_result.stdout
+            if process.returncode != 0:
                 sublime.error_message(
-                    "Error converting to PDF and LaTeX:\n" + error_message)
+                    "There has been an error while generating the PDF from markdown. "
+                    "We will open the translated LaTeX that generated the error:\n" + stderr.decode('utf-8'))
+                # If there is an error, generate a LaTeX file instead
+                self.generate_latex(temp_converted_md_file.name, base_name)
             else:
-                # Open the generated LaTeX file in the default application
-                if os.name == 'nt':  # For Windows
-                    os.startfile(temp_latex_file_name)
-                elif os.name == 'posix':  # For macOS and Linux
-                    subprocess.run(['open', temp_latex_file_name])
-        else:
-            # Open the generated PDF file in the default application
-            if os.name == 'nt':  # For Windows
-                os.startfile(temp_pdf_file_name)
-            elif os.name == 'posix':  # For macOS and Linux
-                subprocess.run(['open', temp_pdf_file_name])
+                # Open the generated PDF file in the default application
+                self.open_file(temp_pdf_file_name)
+        finally:
+            # Reverse the conversion
+            self.view.run_command('convert_md_syntax', {'github2usual': False})
 
-        # Reverse the conversion
-        self.view.run_command('convert_md_syntax', {'github2usual': False})
+    def generate_latex(self, markdown_file, base_name):
+        temp_latex_file_name = os.path.join(
+            tempfile.gettempdir(), base_name + ".tex")
+        temp_files.append(temp_latex_file_name)
+
+        process = subprocess.Popen(['pandoc', markdown_file, '-o', temp_latex_file_name],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+
+        if process.returncode != 0:
+            sublime.error_message(
+                "Error converting to LaTeX:\n" + stderr.decode('utf-8'))
+        else:
+            self.open_file(temp_latex_file_name)
+
+    def open_file(self, file_path):
+        if os.name == 'nt':  # For Windows
+            os.startfile(file_path)
+        elif os.name == 'posix':  # For macOS and Linux
+            subprocess.call(['open', file_path])
 
 # Register a cleanup function to remove temporary files when Sublime Text is closed
 
