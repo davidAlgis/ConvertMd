@@ -1,0 +1,32 @@
+[
+    {
+        "caption": "Convert Markdown : to usual syntax",
+        "command": "convert_md_syntax",
+        "args": {
+            "github2usual": true
+        }
+    },
+    {
+        "caption": "Convert Markdown : to github syntax",
+        "command": "convert_md_syntax",
+        "args": {
+            "github2usual": false
+        }
+    },
+    {
+        "caption": "Convert Markdown : to usual syntax (Apply to Project)",
+        "command": "convert_md_syntax",
+        "args": {
+            "github2usual": true,
+            "applyToProject": true
+        }
+    },
+    {
+        "caption": "Convert Markdown : to github syntax (Apply to Project)",
+        "command": "convert_md_syntax",
+        "args": {
+            "github2usual": false,
+            "applyToProject": true
+        }
+    }
+]
