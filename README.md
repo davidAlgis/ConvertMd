@@ -18,7 +18,8 @@ Use `ctrl+shift+P` to open command palette.
 
 Moreover, in case, you don't want to convert the markdown files of a specific folder of your sublime project. For example, if you don't want to convert the syntax of the markdown located in the dependencies folder. Then you can add the following settings to you sublime-project file:
 
-```
+
+```json
 "settings": {
         "convert_md_syntax": {
             "ignored_folders": [
