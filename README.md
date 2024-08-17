@@ -41,9 +41,8 @@ Note, that the folder path must be given relative to the root of the sublime-pro
    - Ensure that both Pandoc and LaTeX are accessible from your system's PATH.
 
 2. **Installing the Plugin:**
-   <!-- - Clone or download this repository into your Sublime Text `Packages` directory: -->
-     <!-- ```bash -->
-     <!-- git clone https://github.com/yourusername/ConvertMd.git -->
-     <!-- ``` -->
-   <!-- - Alternatively, you can use [Package Control](https://packagecontrol.io/) if you have submitted the plugin there. -->
-<!--  -->
+   - Clone or download this repository into your Sublime Text `Packages` directory:
+     
+```bash
+git clone https://github.com/yourusername/ConvertMd.git
+``` 
