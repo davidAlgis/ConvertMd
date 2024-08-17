@@ -11,6 +11,12 @@ temp_files = []
 
 class ConvertMdToPdfCommand(sublime_plugin.TextCommand):
     def run(self, edit):
+        # Load default and user settings
+        settings = sublime.load_settings("ConvertMd.sublime-settings")
+        display_debug_latex = settings.get("displayDebugLatex", True)
+        syntax_format_post_pdf_gen = settings.get(
+            "syntaxFormatPostPdfGen", "github")
+
         # Get the content of the current view
         content = self.view.substr(sublime.Region(0, self.view.size()))
 
@@ -51,15 +57,18 @@ class ConvertMdToPdfCommand(sublime_plugin.TextCommand):
                     "There has been an error while generating the PDF from markdown. "
                     "We will open the translated LaTeX that generated the error:\n" + stderr.decode('utf-8'))
                 # If there is an error, generate a LaTeX file instead
-                self.generate_latex(temp_converted_md_file.name, base_name)
+                self.generate_latex(temp_converted_md_file.name,
+                                    base_name, display_debug_latex)
             else:
                 # Open the generated PDF file in the default application
                 self.open_file(temp_pdf_file_name)
         finally:
-            # Reverse the conversion
-            self.view.run_command('convert_md_syntax', {'github2usual': False})
+            # Reverse the conversion based on the user setting
+            github2usual = syntax_format_post_pdf_gen != "github"
+            self.view.run_command('convert_md_syntax', {
+                                  'github2usual': github2usual})
 
-    def generate_latex(self, markdown_file, base_name):
+    def generate_latex(self, markdown_file, base_name, display_debug_latex):
         temp_latex_file_name = os.path.join(
             tempfile.gettempdir(), base_name + ".tex")
         temp_files.append(temp_latex_file_name)
@@ -71,7 +80,7 @@ class ConvertMdToPdfCommand(sublime_plugin.TextCommand):
         if process.returncode != 0:
             sublime.error_message(
                 "Error converting to LaTeX:\n" + stderr.decode('utf-8'))
-        else:
+        elif display_debug_latex:
             self.open_file(temp_latex_file_name)
 
     def open_file(self, file_path):

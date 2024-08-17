@@ -1,0 +1,12 @@
+{
+    // Controls whether the LaTeX file should be displayed for debugging
+    // if there is an error during the PDF generation process.
+    // true: The LaTeX file will be opened in case of an error.
+    // false: The LaTeX file will not be opened.
+    "displayDebugLatex": true,
+    // Determines which syntax format to apply after generating the PDF.
+    // Options:
+    // "github" - Reverts the markdown to GitHub-style syntax.
+    // "usual"  - Keeps the markdown in the LaTeX-compatible format.
+    "syntaxFormatPostPdfGen": "usual"
+}
