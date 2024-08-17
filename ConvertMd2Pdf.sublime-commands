@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "Convert Markdown: to PDF",
+        "command": "convert_md_to_pdf"
+    }
+]
